@@ -1,0 +1,4 @@
+package: git.matoski.com/ilijamt/proxy-checker
+import:
+- package: gopkg.in/alecthomas/kingpin.v2
+  version: v2.2.3
