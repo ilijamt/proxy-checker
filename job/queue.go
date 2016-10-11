@@ -13,7 +13,9 @@ type Queue struct {
 	jobs chan Detail
 	quit chan bool
 
-	QueryURL *url.URL
+	queryURL *url.URL
+
+	failedOnly bool
 
 	wg sync.WaitGroup
 }
@@ -22,11 +24,12 @@ func (q *Queue) Wait() {
 	q.wg.Wait()
 }
 
-func NewQueue(queueSize int) *Queue {
+func NewQueue(queueSize int, failedOnly bool) *Queue {
 	queue := &Queue{}
 	queue.jobs = make(chan Detail, queueSize)
 	queue.quit = make(chan bool, 1)
-	queue.QueryURL, _ = url.Parse("https://api.ipify.org")
+	queue.queryURL, _ = url.Parse("https://api.ipify.org")
+	queue.failedOnly = failedOnly
 	return queue
 }
 
@@ -66,17 +69,24 @@ func (q *Queue) IsValidProxy(job Detail) bool {
 	var proxyURL, _ = job.ToURL()
 
 	defer func() {
-		var valid = "invalid"
+		var rsp = "invalid"
 		if validStatus && validResponse {
-			valid = "valid"
+			rsp = "valid"
 		}
-		fmt.Printf("%s is %s\n", proxyURL.String(), valid)
+		if q.failedOnly {
+			if !(validStatus && validResponse) {
+				fmt.Printf("%s is %s\n", proxyURL.String(), rsp)
+			}
+		} else {
+			fmt.Printf("%s is %s\n", proxyURL.String(), rsp)
+		}
+
 	}()
 
 	transport := &http.Transport{Proxy: http.ProxyURL(proxyURL)}
 	client := &http.Client{Transport: transport}
 
-	request, _ := http.NewRequest("GET", q.QueryURL.String(), nil)
+	request, _ := http.NewRequest("GET", q.queryURL.String(), nil)
 	response, err := client.Do(request)
 
 	if err != nil {
@@ -91,7 +101,10 @@ func (q *Queue) IsValidProxy(job Detail) bool {
 	return validStatus && validResponse
 }
 
-func (q *Queue) AddJob(job Detail) {
+func (q *Queue) WgIncr() {
 	q.wg.Add(1)
+}
+
+func (q *Queue) AddJob(job Detail) {
 	q.jobs <- job
 }

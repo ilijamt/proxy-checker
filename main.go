@@ -13,9 +13,10 @@ import (
 var (
 	command string
 
-	app       = kingpin.New(Name, Description)
-	version   = app.Flag("version", "Show version and terminate").Short('v').Bool()
-	queueSize = app.Flag("queue", "How many request to process at one time").Default("25").Int()
+	app        = kingpin.New(Name, Description)
+	version    = app.Flag("version", "Show version and terminate").Short('v').Bool()
+	queueSize  = app.Flag("queue", "How many request to process at one time").Default("25").Int()
+	failedOnly = app.Flag("failed-only", "Show only failed proxies").Bool()
 
 	check         = app.Command("check", "Check the single proxy")
 	checkHostPort = check.Arg("host-port", "The hostname of the proxy with the proxy, add the schema to the URL like https://proxy.com:9000").Required().String()
@@ -35,7 +36,7 @@ func init() {
 		os.Exit(0)
 	}
 
-	queue = job.NewQueue(*queueSize)
+	queue = job.NewQueue(*queueSize, *failedOnly)
 
 }
 
@@ -46,7 +47,8 @@ func main() {
 	switch command {
 	case "check":
 
-		queue.AddJob(job.Detail{
+		queue.WgIncr()
+		go queue.AddJob(job.Detail{
 			Host:     *checkHostPort,
 			Username: *checkUsername,
 			Password: *checkPassword,
