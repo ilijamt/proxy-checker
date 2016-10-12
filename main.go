@@ -9,7 +9,7 @@ import (
 
 	"github.com/alecthomas/kingpin"
 
-	"git.matoski.com/ilijamt/proxy-checker/job"
+	"github.com/ilijamt/proxy-checker/job"
 )
 
 var (
