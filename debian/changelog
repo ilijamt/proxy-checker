@@ -1,5 +1,7 @@
-proxy-checker (0.1.0) UNRELEASED; urgency=medium
+proxy-checker (0.1.0) unstable; urgency=low
 
   * Initial release.
+  * Check a single proxy
+  * Check multiple proxies from a csv file
 
  -- Ilija Matoski <ilijamt@gmail.com>  Wed, 12 Oct 2016 22:17:43 +0200

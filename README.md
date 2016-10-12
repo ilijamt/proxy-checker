@@ -3,6 +3,19 @@ Proxy Checker
 
 Check if you proxy is working or not very easily
 
+## Installation
+
+If you don't want to compile your own version, you can use the following repository to install it 
+
+### Debian
+
+```bash
+echo "deb http://packages.matoski.com/ debian main" | sudo tee /etc/apt/sources.list.d/packages-matoski-com.list
+curl -s http://packages.matoski.com/keyring.gpg | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install proxy-checker
+```
+
 ## Getting Started with Proxy Checker
 
 ### Requirements
