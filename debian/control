@@ -1,0 +1,13 @@
+Source: proxy-checker
+Maintainer: Ilija Matoski <ilijamt@gmail.com>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.8
+Build-Depends: debhelper (>= 9), bash-completion
+
+Package: proxy-checker
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Check if you proxy is working or not very easily
+ A tool to easily check if a given proxy is available or not, 
+ can work with single proxy or a csv file containing a list of proxies
