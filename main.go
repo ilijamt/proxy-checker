@@ -1,13 +1,15 @@
 package main
 
 import (
+	"bufio"
+	"encoding/csv"
 	"fmt"
 	"os"
 	"runtime"
 
-	"git.matoski.com/ilijamt/proxy-checker/job"
-
 	"github.com/alecthomas/kingpin"
+
+	"git.matoski.com/ilijamt/proxy-checker/job"
 )
 
 var (
@@ -22,6 +24,9 @@ var (
 	checkHostPort = check.Arg("host-port", "The hostname of the proxy with the proxy, add the schema to the URL like https://proxy.com:9000").Required().String()
 	checkUsername = check.Arg("username", "The username to use for the proxy, can be empty if no authentication is required").String()
 	checkPassword = check.Arg("password", "The password to use for the proxy, can be empty if no authentication is required").String()
+
+	file     = app.Command("csv-file", "Check all the proxies in the file specified")
+	fileName = file.Arg("name", "The file name to load").Required().File()
 
 	queue *job.Queue
 )
@@ -42,6 +47,7 @@ func init() {
 
 func main() {
 
+	defer queue.Wait()
 	go queue.Run()
 
 	switch command {
@@ -54,8 +60,36 @@ func main() {
 			Password: *checkPassword,
 		})
 
-	}
+	case "csv-file":
+		f, e := os.Open((*fileName).Name())
 
-	queue.Wait()
+		if e != nil {
+			fmt.Errorf("%v", e)
+			return
+		}
+
+		r := csv.NewReader(bufio.NewReader(f))
+		result, _ := r.ReadAll()
+
+		var host string
+		var username string
+		var password string
+
+		for i := range result {
+
+			host = result[i][0]
+			username = result[i][1]
+			password = result[i][2]
+
+			queue.WgIncr()
+			go queue.AddJob(job.Detail{
+				Host:     host,
+				Username: username,
+				Password: password,
+			})
+
+		}
+
+	}
 
 }
