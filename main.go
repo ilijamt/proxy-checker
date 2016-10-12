@@ -64,7 +64,7 @@ func main() {
 		f, e := os.Open((*fileName).Name())
 
 		if e != nil {
-			fmt.Errorf("%v", e)
+			_ = fmt.Errorf("%v", e)
 			return
 		}
 
