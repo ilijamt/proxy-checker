@@ -8,6 +8,7 @@ GOPACKAGES=./...
 GOFILES_GLIDE=$(shell glide novendor)
 GOFILES_NOVENDOR=$(shell find . -type f -name '*.go' -not -path "*/vendor/*")
 VERSION_FILE=VERSION
+GOBIN=$(shell which go)
 
 BUILD_VERSION:=$(shell git log --pretty=format:'%h' -n 1)
 BUILD_DATE:=$(shell date -u)
@@ -19,7 +20,7 @@ endif
 
 .PHONY: build
 build:
-	go build -ldflags "-X 'main.BuildVersion=${VERSION}' -X 'main.BuildHash=${BUILD_VERSION}' -X 'main.BuildDate=${BUILD_DATE}'" -o "${BIN_DIR}/${BIN_FILE}" .
+	${GOBIN} build -ldflags "-X 'main.BuildVersion=${VERSION}' -X 'main.BuildHash=${BUILD_VERSION}' -X 'main.BuildDate=${BUILD_DATE}'" -o "${BIN_DIR}/${BIN_FILE}" .
 	${BIN_DIR}/${BIN_FILE} --completion-script-bash > ${CONTRIB_DIR}/.${BIN_FILE}.bash
 	${BIN_DIR}/${BIN_FILE} --completion-script-zsh > ${CONTRIB_DIR}/.${BIN_FILE}.zsh
 	${BIN_DIR}/${BIN_FILE} --help-man > ${CONTRIB_DIR}/${BIN_FILE}.1
@@ -36,16 +37,11 @@ clean:
 	rm -f "${BIN_DIR}/${BIN_FILE}"
 	rm -rf "${BUILD_DIR}"
 
-.PHONY: autocomplete
-autocomplete: build
-	bin/${BIN_FILE} --completion-script-bash > ${BIN_FILE}.bash
-	bin/${BIN_FILE} --completion-script-zsh > ${BIN_FILE}.zsh
-
 # Checks project and source code if everything is according to standard
 .PHONY: check
 check:
 	gofmt -l ${GOFILES_NOVENDOR} | (! grep . -q) || (echo "Code differs from gofmt's style" && false)
-	go vet ${GOFILES_GLIDE}
+	${GOBIN} vet ${GOFILES_GLIDE}
 
 # Runs gofmt -w on the project's source code, modifying any files that do not
 # match its style.
@@ -62,8 +58,12 @@ simplify:
 # Run the tests for the application
 .PHONY: test
 test:
-	go test $(shell glide novendor) -v
+	${GOBIN} test $(shell glide novendor) -v
 
 .PHONY: lint
 lint:
 	@golint
+
+.PHONY: package
+package:
+	debuild --preserve-env --preserve-envvar PATH -us -uc

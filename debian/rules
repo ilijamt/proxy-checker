@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	make build
+
+override_dh_auto_install:
+	cp $$(pwd)/bin/proxy-checker $$(pwd)/debian/proxy-checker/usr/bin
+	cp $$(pwd)/contrib/proxy-checker.1 $$(pwd)/debian/proxy-checker/usr/share/man/man1
+	dh_bash-completion
