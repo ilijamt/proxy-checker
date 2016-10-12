@@ -1,0 +1,35 @@
+.TH proxy-checker 1  ""
+.SH "NAME"
+proxy-checker
+.SH "SYNOPSIS"
+.TP
+\fBproxy-checker [<flags>] <command> [<args> ...]\fR
+
+.SH "DESCRIPTION"
+Checks if an http proxy with basic auth works by querying https://api.ipify.org/
+.SH "OPTIONS"
+.TP
+\fB-h, --help\fR
+Show context-sensitive help (also try --help-long and --help-man).
+.TP
+\fB-v, --version\fR
+Show version and terminate
+.TP
+\fB--queue=25\fR
+How many request to process at one time
+.TP
+\fB--failed-only\fR
+Show only failed proxies
+.SH "COMMANDS"
+.SS
+\fBhelp [<command>...]\fR
+.PP
+Show help.
+.SS
+\fBcheck <host-port> [<username>] [<password>]\fR
+.PP
+Check the single proxy
+.SS
+\fBcsv-file <name>\fR
+.PP
+Check all the proxies in the file specified
