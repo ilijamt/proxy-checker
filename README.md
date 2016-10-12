@@ -37,7 +37,7 @@ make build
 ### Install
 
 To install the binary for Proxy Checker run the command below. This will generate a binary
-in $GOPATH/bin directory with the name proxy-checker.
+in $GOPATH/bin directory with the name proxy-checker and add the bash autocomplete files.
 
 ```bash
 make install
