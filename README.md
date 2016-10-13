@@ -81,7 +81,6 @@ Checks if an http proxy with basic auth works by querying https://api.ipify.org/
 
 Flags:
   -h, --help         Show context-sensitive help (also try --help-long and --help-man).
-  -v, --version      Show version and terminate
       --queue=25     How many request to process at one time
       --failed-only  Show only failed proxies
 
@@ -89,10 +88,13 @@ Commands:
   help [<command>...]
     Show help.
 
+  version
+    Show version and terminate
+
   check <host-port> [<username>] [<password>]
     Check the single proxy
 
-  csv-file <name>
+  csv-file <file>
     Check all the proxies in the file specified
 ```
 

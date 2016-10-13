@@ -7,6 +7,9 @@ var (
 	// Description is the applications description
 	Description = "Checks if an http proxy with basic auth works by querying https://api.ipify.org/"
 
+	// Maintainer information
+	Maintainer = "Ilija Matoski <ilijamt@gmail.com>"
+
 	// BuildVersion is the version of the build
 	BuildVersion string
 

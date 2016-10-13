@@ -1,7 +1,13 @@
+proxy-checker (0.1.1) unstable; urgency=medium
+
+  * Could not print the version of the application.
+
+ -- Ilija Matoski <ilijamt@gmail.com>  Thu, 13 Oct 2016 08:57:20 +0200
+
 proxy-checker (0.1.0) unstable; urgency=low
 
   * Initial release.
-  * Check a single proxy
-  * Check multiple proxies from a csv file
+  * Check a single proxy.
+  * Check multiple proxies from a csv file.
 
  -- Ilija Matoski <ilijamt@gmail.com>  Wed, 12 Oct 2016 22:17:43 +0200
