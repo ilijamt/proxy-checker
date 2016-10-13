@@ -56,7 +56,21 @@ in $GOPATH/bin directory with the name proxy-checker and add the bash autocomple
 make install
 ```
 
-### Run
+### CSV file
+
+The csv file structure is like this, you can add as many as you want
+
+```csv
+<schema>://<host>[:<port>],<username>,<password>
+```
+
+* **<schema>** is http, or https
+* **<host>** is the actually host of the proxy, or it can even be an IP address
+* **<port>** is the port of the proxy, if not supplied it defaults to 80
+* **<username>** is the username for the proxy
+* **<password>** is the password for the proxy
+
+## Run
 
 ### Help
 ```bash
@@ -87,4 +101,4 @@ Commands:
 Apache License
 Version 2.0, January 2004
 
-See [License](License) file
+See [LICENSE](License) file
