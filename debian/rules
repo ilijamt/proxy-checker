@@ -5,6 +5,7 @@
 
 override_dh_auto_build:
 	make build
+	make after-build
 
 override_dh_auto_install:
 	cp $$(pwd)/bin/proxy-checker $$(pwd)/debian/proxy-checker/usr/bin
