@@ -12,9 +12,6 @@ Checks if an http proxy with basic auth works by querying https://api.ipify.org/
 \fB-h, --help\fR
 Show context-sensitive help (also try --help-long and --help-man).
 .TP
-\fB-v, --version\fR
-Show version and terminate
-.TP
 \fB--queue=25\fR
 How many request to process at one time
 .TP
@@ -26,10 +23,14 @@ Show only failed proxies
 .PP
 Show help.
 .SS
+\fBversion\fR
+.PP
+Show version and terminate
+.SS
 \fBcheck <host-port> [<username>] [<password>]\fR
 .PP
 Check the single proxy
 .SS
-\fBcsv-file <name>\fR
+\fBcsv-file <file>\fR
 .PP
 Check all the proxies in the file specified

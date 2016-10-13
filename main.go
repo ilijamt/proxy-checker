@@ -16,7 +16,7 @@ var (
 	command string
 
 	app        = kingpin.New(Name, Description)
-	version    = app.Flag("version", "Show version and terminate").Short('v').Bool()
+	version    = app.Command("version", "Show version and terminate").Action(ShowVersion)
 	queueSize  = app.Flag("queue", "How many request to process at one time").Default("25").Int()
 	failedOnly = app.Flag("failed-only", "Show only failed proxies").Bool()
 
@@ -26,20 +26,21 @@ var (
 	checkPassword = check.Arg("password", "The password to use for the proxy, can be empty if no authentication is required").String()
 
 	file     = app.Command("csv-file", "Check all the proxies in the file specified")
-	fileName = file.Arg("name", "The file name to load").Required().File()
+	fileName = file.Arg("file", "The file name to load").Required().File()
 
 	queue *job.Queue
 )
+
+func ShowVersion(c *kingpin.ParseContext) error {
+	fmt.Printf("%s version %s build %s (%s), built on %s, by %s\n", Name, BuildVersion, BuildHash, runtime.GOARCH, BuildDate, Maintainer)
+	os.Exit(0)
+	return nil
+}
 
 func init() {
 
 	app.HelpFlag.Short('h')
 	command = kingpin.MustParse(app.Parse(os.Args[1:]))
-
-	if *version {
-		fmt.Printf("%s version %s build %s (%s), build on %s\n", Name, BuildVersion, BuildHash, runtime.GOARCH, BuildDate)
-		os.Exit(0)
-	}
 
 	queue = job.NewQueue(*queueSize, *failedOnly)
 
