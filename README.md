@@ -96,7 +96,37 @@ Commands:
     Check all the proxies in the file specified
 ```
 
-### License 
+### Single proxy
+
+```bash
+proxy-checker check http://example.com:60000 username password
+http://username:password@example.com:60000 is valid
+```
+
+### Checking multiple proxies
+
+Where **proxies.csv** contains
+
+```csv
+http://proxy01.com:60000,username1,password1
+http://proxy02.com:9000,username2,password2
+http://proxy03.com:14000,username3,password3
+http://proxy04.com:60000,username4,password4
+http://proxy05.com,username5,password5
+```
+
+And you can easily check all of them with this command
+
+```bash
+proxy-checker csv-file proxies.csv
+http://username1:password1@proxy01.com:60000 is valid
+http://username2:password2@proxy02.com:9000 is invalid
+http://username3:password3@proxy03.com:14000 is invalid
+http://username4:password4@proxy04.com:60000 is valid
+http://username5:password5@proxy05.com is valid
+```
+
+## License
 
 Apache License
 Version 2.0, January 2004
