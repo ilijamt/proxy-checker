@@ -14,5 +14,6 @@ before_script:
 test:build:
   script:
     - cd $APP_DIR
+    - glide install
     - make build
 
