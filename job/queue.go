@@ -17,19 +17,16 @@ type Queue struct {
 	queryURL *url.URL
 
 	failedOnly bool
-	useLock    bool
 
 	wg   sync.WaitGroup
-	lock sync.Mutex
 }
 
 func (q *Queue) Wait() {
 	q.wg.Wait()
 }
 
-func NewQueue(queueSize int, host string, failedOnly bool, useLock bool) *Queue {
+func NewQueue(queueSize int, host string, failedOnly bool) *Queue {
 	queue := &Queue{}
-	queue.useLock = useLock
 	queue.jobs = make(chan Detail, queueSize)
 	queue.quit = make(chan bool, 1)
 	queue.queryURL, _ = url.Parse(host)
@@ -105,11 +102,6 @@ func (q *Queue) IsValidProxy(job Detail) bool {
 		}
 
 	}()
-
-	if q.useLock {
-		q.lock.Lock()
-		defer q.lock.Unlock()
-	}
 
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	client := &http.Client{

@@ -20,7 +20,6 @@ var (
 	queueSize  = app.Flag("queue", "How many request to process at one time").Default("25").Int()
 	failedOnly = app.Flag("failed-only", "Show only failed proxies").Bool()
 	host       = app.Flag("host", "Host to query for checking the proxy").Default("https://api.ipify.org").String()
-	useLock    = app.Flag("use-lock", "Lock before execution of each requests, due to some issue with golang http.Client library").Bool()
 
 	check         = app.Command("check", "Check the single proxy")
 	checkHostPort = check.Arg("host-port", "The hostname of the proxy with the proxy, add the schema to the URL like https://proxy.com:9000").Required().String()
@@ -44,7 +43,7 @@ func init() {
 	app.HelpFlag.Short('h')
 	command = kingpin.MustParse(app.Parse(os.Args[1:]))
 
-	queue = job.NewQueue(*queueSize, *host, *failedOnly, *useLock)
+	queue = job.NewQueue(*queueSize, *host, *failedOnly)
 
 }
 

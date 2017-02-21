@@ -8,3 +8,4 @@ debian/files
 debian/proxy-checker.bash-completion
 debian/proxy-checker.debhelper.log
 debian/proxy-checker.substvars
+*.csv
