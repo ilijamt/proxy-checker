@@ -17,6 +17,12 @@ How many request to process at one time
 .TP
 \fB--failed-only\fR
 Show only failed proxies
+.TP
+\fB--host="https://api.ipify.org"\fR
+Host to query for checking the proxy
+.TP
+\fB--use-lock\fR
+Lock before execution of each requests, due to some issue with golang http.Client library
 .SH "COMMANDS"
 .SS
 \fBhelp [<command>...]\fR

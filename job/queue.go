@@ -2,11 +2,12 @@ package job
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strings"
 	"sync"
+	"time"
+	"context"
+	"io/ioutil"
 )
 
 type Queue struct {
@@ -16,19 +17,22 @@ type Queue struct {
 	queryURL *url.URL
 
 	failedOnly bool
+	useLock    bool
 
-	wg sync.WaitGroup
+	wg   sync.WaitGroup
+	lock sync.Mutex
 }
 
 func (q *Queue) Wait() {
 	q.wg.Wait()
 }
 
-func NewQueue(queueSize int, failedOnly bool) *Queue {
+func NewQueue(queueSize int, host string, failedOnly bool, useLock bool) *Queue {
 	queue := &Queue{}
+	queue.useLock = useLock
 	queue.jobs = make(chan Detail, queueSize)
 	queue.quit = make(chan bool, 1)
-	queue.queryURL, _ = url.Parse("https://api.ipify.org")
+	queue.queryURL, _ = url.Parse(host)
 	queue.failedOnly = failedOnly
 	return queue
 }
@@ -64,41 +68,65 @@ func (q *Queue) IsValidProxy(job Detail) bool {
 
 	var err error
 	var validStatus bool = false
-	var validResponse = false
-
+	var response *http.Response
 	var proxyURL, _ = job.ToURL()
 
 	defer func() {
 		var rsp = "invalid"
-		if validStatus && validResponse {
+		if validStatus {
 			rsp = "valid"
 		}
+
+		var status string
+		var contentLength int64
+
+		if response == nil {
+			status = "UNKNOWN"
+			contentLength = 0
+		} else {
+			status = response.Status
+			contentLength = response.ContentLength
+			if contentLength <= 0 {
+				body, _ := ioutil.ReadAll(response.Body)
+				l := len(body)
+				contentLength = int64(l)
+			}
+		}
+
 		if q.failedOnly {
-			if !(validStatus && validResponse) {
-				fmt.Printf("%s is %s\n", proxyURL.String(), rsp)
+			if !validStatus {
+				fmt.Printf("%s is %s (Status Code: %s, Content Length: %d)\n", proxyURL.String(), rsp, status, contentLength)
 			}
 		} else {
-			fmt.Printf("%s is %s\n", proxyURL.String(), rsp)
+			fmt.Printf("%s is %s (Status Code: %s, Content Length: %d)\n", proxyURL.String(), rsp, status, contentLength)
+			if validStatus {
+				ioutil.ReadAll(response.Body)
+			}
 		}
 
 	}()
 
-	transport := &http.Transport{Proxy: http.ProxyURL(proxyURL)}
-	client := &http.Client{Transport: transport}
-
-	request, _ := http.NewRequest("GET", q.queryURL.String(), nil)
-	response, err := client.Do(request)
-
-	if err != nil {
-		return validStatus && validResponse
+	if q.useLock {
+		q.lock.Lock()
+		defer q.lock.Unlock()
 	}
 
-	body, _ := ioutil.ReadAll(response.Body)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	client := &http.Client{
+		Transport: &http.Transport{
+			Proxy: http.ProxyURL(proxyURL),
+		},
+	}
+	req, _ := http.NewRequest("GET", q.queryURL.String(), nil)
+	req = req.WithContext(ctx)
+	response, err = client.Do(req)
 
-	validStatus = response.Status == "200 OK"
-	validResponse = strings.Contains(proxyURL.String(), string(body))
+	validStatus = err == nil
+	if response != nil {
+		validStatus = err == nil && response.Status == "200 OK"
+	}
 
-	return validStatus && validResponse
+	return validStatus
 }
 
 func (q *Queue) WgIncr() {
