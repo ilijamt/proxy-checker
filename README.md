@@ -20,7 +20,7 @@ sudo apt-get install proxy-checker
 
 ### Requirements
 
-* [Golang](https://golang.org/dl/) >= 1.7
+* [Golang](https://golang.org/dl/) >= 1.8
 * [Glide](https://github.com/Masterminds/glide) >= 0.12.3
 
 ### Autocomplete
@@ -83,6 +83,8 @@ Flags:
   -h, --help         Show context-sensitive help (also try --help-long and --help-man).
       --queue=25     How many request to process at one time
       --failed-only  Show only failed proxies
+      --host="https://api.ipify.org"  
+                     Host to query for checking the proxy
 
 Commands:
   help [<command>...]
